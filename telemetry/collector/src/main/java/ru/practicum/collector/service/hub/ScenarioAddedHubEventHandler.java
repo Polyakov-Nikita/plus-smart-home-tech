@@ -1,7 +1,5 @@
 package ru.practicum.collector.service.hub;
 
-import org.apache.avro.specific.SpecificRecordBase;
-import org.apache.kafka.clients.producer.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.practicum.collector.dto.hub.HubEvent;
@@ -9,6 +7,7 @@ import ru.practicum.collector.dto.hub.HubTypeNames;
 import ru.practicum.collector.dto.hub.scenario.added.ScenarioAddedHubEvent;
 import ru.practicum.collector.dto.hub.scenario.added.device.action.DeviceAction;
 import ru.practicum.collector.dto.hub.scenario.added.scenario.condition.ScenarioCondition;
+import ru.practicum.collector.kafka.KafkaEventProducer;
 import ru.yandex.practicum.kafka.telemetry.event.DeviceActionAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ScenarioAddedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ScenarioConditionAvro;
@@ -19,7 +18,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class ScenarioAddedHubEventHandler extends HubEventHandlerBase<ScenarioAddedEventAvro> {
     @Autowired
-    public ScenarioAddedHubEventHandler(Producer<String, SpecificRecordBase> producer) {
+    public ScenarioAddedHubEventHandler(KafkaEventProducer producer) {
         super(producer);
     }
 
