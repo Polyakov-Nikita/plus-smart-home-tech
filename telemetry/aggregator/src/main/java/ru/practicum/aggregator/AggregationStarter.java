@@ -10,7 +10,8 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.stereotype.Component;
-import ru.practicum.aggregator.configuration.KafkaConfiguration;
+import ru.practicum.aggregator.configuration.ConsumerConfiguration;
+import ru.practicum.aggregator.configuration.ProducerConfiguration;
 import ru.practicum.aggregator.service.AggregationService;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
@@ -21,7 +22,8 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class AggregationStarter {
-    private final KafkaConfiguration kafkaConfiguration;
+    private final ConsumerConfiguration consumerConfiguration;
+    private final ProducerConfiguration producerConfiguration;
     private final KafkaConsumer<String, SpecificRecordBase> consumer;
     private final KafkaProducer<String, SpecificRecordBase> producer;
     private final AggregationService aggregationService;
@@ -29,9 +31,9 @@ public class AggregationStarter {
     public void start() {
         Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
         try {
-            consumer.subscribe(kafkaConfiguration.getTopics());
+            consumer.subscribe(consumerConfiguration.getTopics());
             while (true) {
-                ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(kafkaConfiguration.getConsumeAttemptTimeout());
+                ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(consumerConfiguration.getAttemptTimeout());
 
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
                     SensorEventAvro eventAvro = (SensorEventAvro) record.value();
@@ -40,7 +42,7 @@ public class AggregationStarter {
                     if (snapshot.isPresent()) {
                         SensorsSnapshotAvro snap = snapshot.get();
                         ProducerRecord<String, SpecificRecordBase> producerRecord =
-                                new ProducerRecord<>(kafkaConfiguration.getProducerTopic(), null,
+                                new ProducerRecord<>(producerConfiguration.getTopic(), null,
                                         snap.getTimestamp().toEpochMilli(), snap.getHubId(), snap);
                         producer.send(producerRecord);
                     }
