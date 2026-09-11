@@ -19,15 +19,15 @@ public abstract class SensorEventHandlerBase<P extends SpecificRecordBase> imple
 
     @Override
     public void handle(SensorEventProto event) {
-        String id = event.getId();
+        String hubId = event.getHubId();
         Timestamp timestamp = event.getTimestamp();
         Instant instant = Instant.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos());
         SensorEventAvro eventAvro = SensorEventAvro.newBuilder()
-                .setId(id)
+                .setId(event.getId())
                 .setHubId(event.getHubId())
                 .setTimestamp(instant)
                 .setPayload(getPayload(event))
                 .build();
-        producer.send(TOPIC, instant, id, eventAvro);
+        producer.send(TOPIC, instant, hubId, eventAvro);
     }
 }
