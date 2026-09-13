@@ -3,6 +3,7 @@ package ru.practicum.analyzer.service.hub;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.analyzer.entity.*;
 import ru.practicum.analyzer.repository.ActionRepository;
 import ru.practicum.analyzer.repository.ConditionRepository;
@@ -31,21 +32,28 @@ public class ScenarioAddedHandler implements HubEventHandler {
     }
 
     @Override
+    @Transactional
     public void handle(HubEventAvro event) {
         ScenarioAddedEventAvro scenarioAddedEvent = (ScenarioAddedEventAvro) event.getPayload();
-        Scenario scenario = buildAndSaveScenario(event.getHubId(), scenarioAddedEvent.getName());
+        Scenario scenario = findScenario(event.getHubId(), scenarioAddedEvent.getName());
         saveConditions(scenario, scenarioAddedEvent.getConditions());
         saveActions(scenario, scenarioAddedEvent.getActions());
         saveScenario(scenario);
     }
 
-    private Scenario buildAndSaveScenario(String hubId, String name) {
-        return scenarioRepository.save(
-                Scenario.builder()
-                        .hubId(hubId)
-                        .name(name)
-                        .build()
-        );
+    private Scenario findScenario(String hubId, String name) {
+        return scenarioRepository.findByHubIdAndName(hubId, name)
+                .map(existing -> {
+                    existing.getConditions().clear();
+                    existing.getActions().clear();
+                    return existing;
+                })
+                .orElseGet(() -> scenarioRepository.save(
+                        Scenario.builder()
+                                .hubId(hubId)
+                                .name(name)
+                                .build()
+                ));
     }
 
     private void saveConditions(Scenario scenario, List<ScenarioConditionAvro> conditions) {
