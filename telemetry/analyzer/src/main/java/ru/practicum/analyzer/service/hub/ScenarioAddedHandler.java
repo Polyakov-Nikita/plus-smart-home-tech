@@ -38,7 +38,7 @@ public class ScenarioAddedHandler implements HubEventHandler {
         Scenario scenario = findScenario(event.getHubId(), scenarioAddedEvent.getName());
         saveConditions(scenario, scenarioAddedEvent.getConditions());
         saveActions(scenario, scenarioAddedEvent.getActions());
-        saveScenario(scenario);
+        log.trace("scenario saved: {}", scenario);
     }
 
     private Scenario findScenario(String hubId, String name) {
@@ -137,10 +137,5 @@ public class ScenarioAddedHandler implements HubEventHandler {
                         .action(action)
                         .build()
         );
-    }
-
-    private void saveScenario(Scenario scenario) {
-        scenarioRepository.save(scenario);
-        log.trace("scenario saved: {}", scenario);
     }
 }

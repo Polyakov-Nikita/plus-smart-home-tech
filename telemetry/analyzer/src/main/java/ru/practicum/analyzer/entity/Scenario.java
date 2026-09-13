@@ -3,8 +3,8 @@ package ru.practicum.analyzer.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Builder
 @NoArgsConstructor
@@ -24,8 +24,8 @@ public class Scenario {
     private String name;
     @OneToMany(mappedBy = "scenario", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<ScenarioCondition> conditions = new ArrayList<>();
+    private Set<ScenarioCondition> conditions = new HashSet<>();
     @OneToMany(mappedBy = "scenario", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<ScenarioAction> actions = new ArrayList<>();
+    private Set<ScenarioAction> actions = new HashSet<>();
 }
