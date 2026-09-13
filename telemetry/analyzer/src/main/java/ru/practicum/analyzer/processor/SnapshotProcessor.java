@@ -43,11 +43,13 @@ public class SnapshotProcessor {
             snapshotConsumer.subscribe(snapshotConsumerProperties.getTopics());
             while (true) {
                 ConsumerRecords<String, SpecificRecordBase> records = snapshotConsumer.poll(consumerProperties.getAttemptTimeout());
-                for (ConsumerRecord<String, SpecificRecordBase> record : records) {
-                    SensorsSnapshotAvro snapshot = (SensorsSnapshotAvro) record.value();
-                    processSnapshot(snapshot);
+                if (!records.isEmpty()) {
+                    for (ConsumerRecord<String, SpecificRecordBase> record : records) {
+                        SensorsSnapshotAvro snapshot = (SensorsSnapshotAvro) record.value();
+                        processSnapshot(snapshot);
+                    }
+                    snapshotConsumer.commitSync();
                 }
-                snapshotConsumer.commitSync();
             }
         } catch (Exception e) {
             log.error("SnapshotProcessor error: ", e);

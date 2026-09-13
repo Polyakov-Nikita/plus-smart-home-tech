@@ -34,20 +34,21 @@ public class AggregationStarter {
             consumer.subscribe(consumerProperties.getTopics());
             while (true) {
                 ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(consumerProperties.getAttemptTimeout());
+                if (!records.isEmpty()) {
+                    for (ConsumerRecord<String, SpecificRecordBase> record : records) {
+                        SensorEventAvro eventAvro = (SensorEventAvro) record.value();
+                        Optional<SensorsSnapshotAvro> snapshot = aggregationService.updateState(eventAvro);
 
-                for (ConsumerRecord<String, SpecificRecordBase> record : records) {
-                    SensorEventAvro eventAvro = (SensorEventAvro) record.value();
-                    Optional<SensorsSnapshotAvro> snapshot = aggregationService.updateState(eventAvro);
-
-                    if (snapshot.isPresent()) {
-                        SensorsSnapshotAvro snap = snapshot.get();
-                        ProducerRecord<String, SpecificRecordBase> producerRecord =
-                                new ProducerRecord<>(producerProperties.getTopic(), null,
-                                        snap.getTimestamp().toEpochMilli(), snap.getHubId(), snap);
-                        producer.send(producerRecord);
+                        if (snapshot.isPresent()) {
+                            SensorsSnapshotAvro snap = snapshot.get();
+                            ProducerRecord<String, SpecificRecordBase> producerRecord =
+                                    new ProducerRecord<>(producerProperties.getTopic(), null,
+                                            snap.getTimestamp().toEpochMilli(), snap.getHubId(), snap);
+                            producer.send(producerRecord);
+                        }
                     }
+                    consumer.commitSync();
                 }
-                consumer.commitSync();
             }
         } catch (WakeupException ignored) {
             log.info("wakeup exception");

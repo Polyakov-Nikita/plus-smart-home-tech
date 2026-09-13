@@ -49,10 +49,12 @@ public class HubEventProcessor implements Runnable {
             hubConsumer.subscribe(hubConsumerProperties.getTopics());
             while (true) {
                 ConsumerRecords<String, SpecificRecordBase> records = hubConsumer.poll(consumerProperties.getAttemptTimeout());
-                for (ConsumerRecord<String, SpecificRecordBase> record : records) {
-                    handle(record);
+                if (!records.isEmpty()) {
+                    for (ConsumerRecord<String, SpecificRecordBase> record : records) {
+                        handle(record);
+                    }
+                    hubConsumer.commitSync();
                 }
-                hubConsumer.commitSync();
             }
         } catch (Exception e) {
             log.error("HubProcessor error: ", e);

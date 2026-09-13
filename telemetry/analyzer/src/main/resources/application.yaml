@@ -38,6 +38,7 @@ kafka:
         client.id: analyzer-hub-consumer
         key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
         value.deserializer: ru.practicum.deserialization.HubEventDeserializer
+        enable.auto.commit: false
       topics:
         - telemetry.hubs.v1
     snapshot:
@@ -47,5 +48,6 @@ kafka:
         client.id: analyzer-snapshot-consumer
         key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
         value.deserializer: ru.practicum.deserialization.SensorsSnapshotDeserializer
+        enable.auto.commit: false
       topics:
         - telemetry.snapshots.v1
