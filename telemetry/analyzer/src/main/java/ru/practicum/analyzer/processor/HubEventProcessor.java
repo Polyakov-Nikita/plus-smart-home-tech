@@ -7,8 +7,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.practicum.analyzer.configuration.ConsumerConfiguration;
-import ru.practicum.analyzer.configuration.HubConsumerConfiguration;
+import ru.practicum.analyzer.configuration.consumer.ConsumerProperties;
+import ru.practicum.analyzer.configuration.consumer.hub.HubConsumerProperties;
 import ru.practicum.analyzer.service.hub.HubEventHandler;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 
@@ -20,20 +20,20 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class HubEventProcessor implements Runnable {
-    private final ConsumerConfiguration consumerConfiguration;
-    private final HubConsumerConfiguration hubConsumerConfiguration;
+    private final ConsumerProperties consumerProperties;
+    private final HubConsumerProperties hubConsumerProperties;
     private final KafkaConsumer<String, SpecificRecordBase> hubConsumer;
     private final Map<Class<?>, HubEventHandler> hubEventHandlerMap;
 
     @Autowired
     public HubEventProcessor(
-            ConsumerConfiguration consumerConfiguration,
-            HubConsumerConfiguration hubConsumerConfiguration,
+            ConsumerProperties consumerProperties,
+            HubConsumerProperties hubConsumerProperties,
             KafkaConsumer<String, SpecificRecordBase> hubConsumer,
             Set<HubEventHandler> hubEventHandlers
     ) {
-        this.consumerConfiguration = consumerConfiguration;
-        this.hubConsumerConfiguration = hubConsumerConfiguration;
+        this.consumerProperties = consumerProperties;
+        this.hubConsumerProperties = hubConsumerProperties;
         this.hubConsumer = hubConsumer;
         this.hubEventHandlerMap = hubEventHandlers.stream()
                 .collect(Collectors.toMap(
@@ -46,9 +46,9 @@ public class HubEventProcessor implements Runnable {
     public void run() {
         Runtime.getRuntime().addShutdownHook(new Thread(hubConsumer::wakeup));
         try {
-            hubConsumer.subscribe(hubConsumerConfiguration.getTopics());
+            hubConsumer.subscribe(hubConsumerProperties.getTopics());
             while (true) {
-                ConsumerRecords<String, SpecificRecordBase> records = hubConsumer.poll(consumerConfiguration.getAttemptTimeout());
+                ConsumerRecords<String, SpecificRecordBase> records = hubConsumer.poll(consumerProperties.getAttemptTimeout());
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
                     handle(record);
                 }

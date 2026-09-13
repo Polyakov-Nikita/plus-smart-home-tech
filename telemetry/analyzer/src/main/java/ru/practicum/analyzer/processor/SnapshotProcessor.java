@@ -9,8 +9,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.stereotype.Component;
-import ru.practicum.analyzer.configuration.ConsumerConfiguration;
-import ru.practicum.analyzer.configuration.SnapshotConsumerConfiguration;
+import ru.practicum.analyzer.configuration.consumer.ConsumerProperties;
+import ru.practicum.analyzer.configuration.consumer.snapshot.SnapshotConsumerProperties;
 import ru.practicum.analyzer.entity.*;
 import ru.practicum.analyzer.repository.ScenarioRepository;
 import ru.practicum.analyzer.service.snapshot.condition.ConditionProcessor;
@@ -28,8 +28,8 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class SnapshotProcessor {
-    private final ConsumerConfiguration consumerConfiguration;
-    private final SnapshotConsumerConfiguration snapshotConsumerConfiguration;
+    private final ConsumerProperties consumerProperties;
+    private final SnapshotConsumerProperties snapshotConsumerProperties;
     private final KafkaConsumer<String, SpecificRecordBase> snapshotConsumer;
     private final ScenarioRepository scenarioRepository;
     private final ConditionProcessor conditionProcessor;
@@ -40,9 +40,9 @@ public class SnapshotProcessor {
     public void start() {
         Runtime.getRuntime().addShutdownHook(new Thread(snapshotConsumer::wakeup));
         try {
-            snapshotConsumer.subscribe(snapshotConsumerConfiguration.getTopics());
+            snapshotConsumer.subscribe(snapshotConsumerProperties.getTopics());
             while (true) {
-                ConsumerRecords<String, SpecificRecordBase> records = snapshotConsumer.poll(consumerConfiguration.getAttemptTimeout());
+                ConsumerRecords<String, SpecificRecordBase> records = snapshotConsumer.poll(consumerProperties.getAttemptTimeout());
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
                     SensorsSnapshotAvro snapshot = (SensorsSnapshotAvro) record.value();
                     processSnapshot(snapshot);

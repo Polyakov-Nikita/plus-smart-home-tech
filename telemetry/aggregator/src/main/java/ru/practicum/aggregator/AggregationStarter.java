@@ -10,8 +10,8 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.stereotype.Component;
-import ru.practicum.aggregator.configuration.ConsumerConfiguration;
-import ru.practicum.aggregator.configuration.ProducerConfiguration;
+import ru.practicum.aggregator.configuration.consumer.ConsumerProperties;
+import ru.practicum.aggregator.configuration.producer.ProducerProperties;
 import ru.practicum.aggregator.service.AggregationService;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
@@ -22,8 +22,8 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class AggregationStarter {
-    private final ConsumerConfiguration consumerConfiguration;
-    private final ProducerConfiguration producerConfiguration;
+    private final ConsumerProperties consumerProperties;
+    private final ProducerProperties producerProperties;
     private final KafkaConsumer<String, SpecificRecordBase> consumer;
     private final KafkaProducer<String, SpecificRecordBase> producer;
     private final AggregationService aggregationService;
@@ -31,9 +31,9 @@ public class AggregationStarter {
     public void start() {
         Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
         try {
-            consumer.subscribe(consumerConfiguration.getTopics());
+            consumer.subscribe(consumerProperties.getTopics());
             while (true) {
-                ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(consumerConfiguration.getAttemptTimeout());
+                ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(consumerProperties.getAttemptTimeout());
 
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
                     SensorEventAvro eventAvro = (SensorEventAvro) record.value();
@@ -42,7 +42,7 @@ public class AggregationStarter {
                     if (snapshot.isPresent()) {
                         SensorsSnapshotAvro snap = snapshot.get();
                         ProducerRecord<String, SpecificRecordBase> producerRecord =
-                                new ProducerRecord<>(producerConfiguration.getTopic(), null,
+                                new ProducerRecord<>(producerProperties.getTopic(), null,
                                         snap.getTimestamp().toEpochMilli(), snap.getHubId(), snap);
                         producer.send(producerRecord);
                     }

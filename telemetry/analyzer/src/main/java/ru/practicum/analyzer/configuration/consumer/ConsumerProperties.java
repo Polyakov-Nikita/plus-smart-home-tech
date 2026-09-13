@@ -1,15 +1,14 @@
-package ru.practicum.analyzer.configuration;
+package ru.practicum.analyzer.configuration.consumer;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.time.Duration;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @ConfigurationProperties("kafka.consumer")
-@SuppressWarnings("unused")
-public class ConsumerConfiguration {
-    private long attemptTimeoutMillis;
+public class ConsumerProperties {
+    private final long attemptTimeoutMillis;
 
     public Duration getAttemptTimeout() {
         return Duration.ofMillis(attemptTimeoutMillis);
