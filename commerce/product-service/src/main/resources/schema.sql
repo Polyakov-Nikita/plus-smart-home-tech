@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS categories (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    description VARCHAR(500)
+);
+
+CREATE TABLE IF NOT EXISTS products (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    description VARCHAR(2000),
+    price DECIMAL(19, 2) NOT NULL CHECK (price >= 0.01),
+    category_id BIGINT,
+    image_url TEXT,
+    active BOOLEAN NOT NULL,
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);

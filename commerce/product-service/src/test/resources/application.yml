@@ -17,3 +17,11 @@ spring:
 eureka:
   client:
     enabled: false
+
+controllers:
+  categories:
+    base-path: /api/categories
+  products:
+    base-path: /api/products
+    search: /search
+    categories: /categories/{categoryId}
