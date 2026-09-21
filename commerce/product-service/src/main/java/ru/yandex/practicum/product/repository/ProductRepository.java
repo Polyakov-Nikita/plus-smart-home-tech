@@ -14,12 +14,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                 .orElseThrow(() -> new NotFoundException("product", id));
     }
 
-    @Query("SELECT p FROM Product p JOIN FETCH p.category")
+    @Query("SELECT p FROM Product p JOIN FETCH p.category WHERE p.active = true")
     List<Product> findAllProducts();
 
-    @Query("SELECT p FROM Product p JOIN FETCH p.category WHERE LOWER(p.name) LIKE %:query%")
+    @Query("SELECT p FROM Product p JOIN FETCH p.category WHERE LOWER(p.name) LIKE %:query% AND p.active = true")
     List<Product> findByNameContaining(@Param("query") String query);
 
-    @Query("SELECT p FROM Product p JOIN FETCH p.category WHERE p.category.id = :categoryId")
+    @Query("SELECT p FROM Product p JOIN FETCH p.category WHERE p.category.id = :categoryId AND p.active = true")
     List<Product> findByCategoryId(@Param("categoryId") Long categoryId);
 }
