@@ -1,7 +1,6 @@
 package ru.yandex.practicum.inventory.exception;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,14 +11,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
+@SuppressWarnings("unused")
 public class GlobalExceptionHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
-    @ExceptionHandler(NotFoundException.class)
+    @ExceptionHandler(InventoryNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFound(NotFoundException e) {
+    public ErrorResponse handleInventoryNotFound(InventoryNotFoundException e) {
         log.warn("Ресурс не найден: {}", e.getMessage());
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage());
     }
@@ -65,5 +63,26 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleGeneral(Exception e) {
         log.error("Внутренняя ошибка сервера", e);
         return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Внутренняя ошибка сервера");
+    }
+
+    @ExceptionHandler(InventoryAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleInventoryAlreadyExists(InventoryAlreadyExistsException e) {
+        log.error("Продукт уже добавлен на склад: {}", e.getMessage());
+        return new ErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage());
+    }
+
+    @ExceptionHandler(NotEnoughAvailableQuantityException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleNotEnoughAvailableQuantity(NotEnoughAvailableQuantityException e) {
+        log.error("Для резервирования недостаточно товара: {}", e.getMessage());
+        return new ErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage());
+    }
+
+    @ExceptionHandler(NotEnoughTotalQuantityException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleNotEnoughTotalQuantity(NotEnoughTotalQuantityException e) {
+        log.error("Новое количество товара меньше уже зарезервированного: {}", e.getMessage());
+        return new ErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage());
     }
 }
