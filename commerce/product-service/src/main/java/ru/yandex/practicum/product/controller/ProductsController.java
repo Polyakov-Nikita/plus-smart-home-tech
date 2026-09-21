@@ -52,7 +52,7 @@ public class ProductsController {
                 .body(productsService.searchProducts(query));
     }
 
-    @GetMapping("${controllers.products.categories}")
+    @GetMapping("${controllers.products.category}")
     public ResponseEntity<List<ProductDto>> getProductsByCategory(@PathVariable long categoryId) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(productsService.getProductsByCategory(categoryId));

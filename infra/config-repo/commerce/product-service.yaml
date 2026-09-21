@@ -21,4 +21,4 @@ controllers:
   products:
     base-path: /api/products
     search: /search
-    categories: /categories/{categoryId}
+    category: /category/{categoryId}
