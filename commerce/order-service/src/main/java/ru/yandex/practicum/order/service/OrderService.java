@@ -32,10 +32,10 @@ public class OrderService {
 
     private void initialize(Order order) {
         order.setStatus(OrderStatus.CREATED);
-        order.setTotalPrice(calculateTotalPriceOf(order.getItems()));
-        order.setStatusDetails("string");
+        BigDecimal totalPrice = calculateTotalPriceOf(order.getItems());
+        order.setTotalPrice(totalPrice);
         order.setCreatedAt(LocalDateTime.now());
-        linkEvents(order);
+        linkItems(order);
     }
 
     private BigDecimal calculateTotalPriceOf(List<OrderItem> items) {
@@ -44,7 +44,7 @@ public class OrderService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private void linkEvents(Order order) {
+    private void linkItems(Order order) {
         order.getItems().forEach((item) -> item.setOrder(order));
     }
 
