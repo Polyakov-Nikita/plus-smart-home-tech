@@ -8,10 +8,7 @@ import ru.yandex.practicum.inventory.dto.ReserveRequest;
 import ru.yandex.practicum.inventory.dto.ReserveResponse;
 import ru.yandex.practicum.inventory.dto.UpdateInventoryRequest;
 import ru.yandex.practicum.inventory.entity.Inventory;
-import ru.yandex.practicum.inventory.exception.InventoryAlreadyExistsException;
-import ru.yandex.practicum.inventory.exception.InventoryNotFoundException;
-import ru.yandex.practicum.inventory.exception.NotEnoughAvailableQuantityException;
-import ru.yandex.practicum.inventory.exception.NotEnoughTotalQuantityException;
+import ru.yandex.practicum.inventory.exception.*;
 import ru.yandex.practicum.inventory.mapping.InventoryMapper;
 import ru.yandex.practicum.inventory.repository.InventoryRepository;
 
@@ -50,7 +47,7 @@ public class InventoryService {
         Integer requestQuantity = request.quantity();
         checkAvailableQuantity(inventory.getAvailableQuantity(), requestQuantity);
         reserveQuantity(inventory, requestQuantity);
-        return createResponse(inventory.getAvailableQuantity());
+        return createResponse(inventory.getAvailableQuantity(), "product successfully reserved");
     }
 
     private Inventory getInventoryBy(Long productId) {
@@ -71,12 +68,34 @@ public class InventoryService {
         inventory.setReservedQuantity(reservedQuantity);
     }
 
-    private ReserveResponse createResponse(Integer availableQuantity) {
+    private ReserveResponse createResponse(Integer availableQuantity, String message) {
         return new ReserveResponse(
                 true,
                 availableQuantity,
-                "product successfully reserved"
+                message
         );
+    }
+
+    @Transactional
+    public ReserveResponse releaseInventory(ReserveRequest request) {
+        Inventory inventory = getInventoryBy(request.productId());
+        Integer requestQuantity = request.quantity();
+        checkReservedQuantity(inventory.getReservedQuantity(), requestQuantity);
+        releaseQuantity(inventory, requestQuantity);
+        return createResponse(inventory.getAvailableQuantity(), "product successfully released");
+    }
+
+    private void checkReservedQuantity(Integer reservedQuantity, Integer needToRelease) {
+        if (reservedQuantity < needToRelease) {
+            throw new NotEnoughReservedQuantityException(reservedQuantity, needToRelease);
+        }
+    }
+
+    private void releaseQuantity(Inventory inventory, Integer quantity) {
+        Integer availableQuantity = inventory.getAvailableQuantity() + quantity;
+        inventory.setAvailableQuantity(availableQuantity);
+        Integer reservedQuantity = inventory.getReservedQuantity() - quantity;
+        inventory.setReservedQuantity(reservedQuantity);
     }
 
     @Transactional

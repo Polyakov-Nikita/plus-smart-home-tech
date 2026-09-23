@@ -3,13 +3,13 @@ package ru.yandex.practicum.order.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.order.dto.CreateOrderRequest;
 import ru.yandex.practicum.order.dto.OrderDto;
 import ru.yandex.practicum.order.dto.OrderStatus;
 import ru.yandex.practicum.order.entity.Order;
 import ru.yandex.practicum.order.entity.OrderItem;
 import ru.yandex.practicum.order.mapping.OrderMapper;
 import ru.yandex.practicum.order.repository.OrderRepository;
+import ru.yandex.practicum.order.service.dto.OrderData;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,15 +23,15 @@ public class OrderService {
     private final OrderMapper orderMapper;
 
     @Transactional
-    public OrderDto createOrder(CreateOrderRequest request) {
-        Order order = orderMapper.toOrder(request);
+    public OrderDto createOrder(OrderData orderData) {
+        Order order = orderMapper.toOrder(orderData);
         initialize(order);
         Order result = orderRepository.save(order);
         return orderMapper.toOrderDto(result);
     }
 
     private void initialize(Order order) {
-        order.setStatus(OrderStatus.CREATED);
+        order.setStatus(OrderStatus.CONFIRMED);
         BigDecimal totalPrice = calculateTotalPriceOf(order.getItems());
         order.setTotalPrice(totalPrice);
         order.setCreatedAt(LocalDateTime.now());
