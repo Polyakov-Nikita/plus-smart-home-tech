@@ -19,3 +19,4 @@ controllers:
   inventory:
     base-path: /api/inventory
     reserve: /reserve
+    release: /release
