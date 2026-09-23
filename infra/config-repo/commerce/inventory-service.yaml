@@ -14,9 +14,3 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
-
-controllers:
-  inventory:
-    base-path: /api/inventory
-    reserve: /reserve
-    release: /release

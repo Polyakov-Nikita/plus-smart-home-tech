@@ -14,8 +14,17 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 1000
+            readTimeout: 2000
+            loggerLevel: none
+          inventory-service:
+            loggerLevel: basic
 
-controllers:
-  order:
-    base-path: /api/orders
-    by-email: /by-email
+  logging:
+    level:
+      ru.yandex.practicum.order.feign.InventoryClient: DEBUG
