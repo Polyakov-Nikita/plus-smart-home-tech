@@ -1,8 +1,15 @@
 package ru.yandex.practicum.order.exception;
 
-public class NotFoundException extends RuntimeException {
+import lombok.Getter;
 
-    public NotFoundException(String message) {
-        super(message);
+@Getter
+public class NotFoundException extends RuntimeException {
+    private final String entityType;
+    private final long id;
+
+    public NotFoundException(String entityType, long id) {
+        super(String.format("%s not found, id: '%d'", entityType, id));
+        this.entityType = entityType;
+        this.id = id;
     }
 }

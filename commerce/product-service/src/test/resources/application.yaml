@@ -4,7 +4,7 @@ spring:
     config:
       enabled: false
   datasource:
-    url: jdbc:h2:mem:inventory_test;DB_CLOSE_DELAY=-1
+    url: jdbc:h2:mem:product_test;DB_CLOSE_DELAY=-1
     driver-class-name: org.h2.Driver
   jpa:
     hibernate:
@@ -17,3 +17,11 @@ spring:
 eureka:
   client:
     enabled: false
+
+controllers:
+  categories:
+    base-path: /api/categories
+  products:
+    base-path: /api/products
+    search: /search
+    category: /category/{categoryId}
