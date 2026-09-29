@@ -2,17 +2,17 @@ package ru.yandex.practicum.order.mapping;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.order.dto.OrderItemDto;
-import ru.yandex.practicum.order.dto.OrderItemRequest;
 import ru.yandex.practicum.order.entity.OrderItem;
+import ru.yandex.practicum.order.service.dto.ItemData;
 
 @Component
 public class OrderItemMapper {
-    public OrderItem toOrderItem(OrderItemRequest orderItemRequest) {
+    public OrderItem toOrderItem(ItemData itemData) {
         return OrderItem.builder()
-                .productId(orderItemRequest.productId())
-                .productName(orderItemRequest.productName())
-                .quantity(orderItemRequest.quantity())
-                .price(orderItemRequest.price())
+                .productId(itemData.productId())
+                .productName(itemData.productName())
+                .quantity(itemData.quantity())
+                .price(itemData.price())
                 .build();
     }
 

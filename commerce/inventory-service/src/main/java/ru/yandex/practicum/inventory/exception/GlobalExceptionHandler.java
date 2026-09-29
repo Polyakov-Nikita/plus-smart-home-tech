@@ -79,6 +79,13 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage());
     }
 
+    @ExceptionHandler(NotEnoughReservedQuantityException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleNotEnoughReservedQuantity(NotEnoughReservedQuantityException e) {
+        log.error("Не достаточно зарезервированных товаров для снятия резерва: {}", e.getMessage());
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
+
     @ExceptionHandler(NotEnoughTotalQuantityException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleNotEnoughTotalQuantity(NotEnoughTotalQuantityException e) {

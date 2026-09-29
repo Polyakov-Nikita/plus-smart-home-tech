@@ -32,6 +32,12 @@ public class InventoryController {
                 .body(inventoryService.reserveInventory(request));
     }
 
+    @PostMapping("${controllers.inventory.release}")
+    public ResponseEntity<ReserveResponse> releaseInventory(@RequestBody @Valid ReserveRequest request) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(inventoryService.releaseInventory(request));
+    }
+
     @PutMapping
     public ResponseEntity<InventoryDto> updateInventory(@RequestBody @Valid UpdateInventoryRequest request) {
         return ResponseEntity.status(HttpStatus.OK)
