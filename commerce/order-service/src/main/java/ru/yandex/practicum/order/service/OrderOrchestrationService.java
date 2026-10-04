@@ -37,12 +37,11 @@ public class OrderOrchestrationService {
         itemsData = addProductInfo(itemsData, isProductDegraded);
         if (isProductDegraded.get()) {
             OrderData orderData = createOrderData(request, itemsData);
-            return orderService.createOrder(orderData,
-                    new OrderStatusInfo(OrderStatus.PENDING_CONFIRMATION, "order is awaiting confirmation"));
+            return orderService.createOrder(orderData, createStatusInfo(isProductDegraded));
         }
         reserveItems(itemsData, isInventoryDegraded);
         OrderData orderData = createOrderData(request, itemsData);
-        return orderService.createOrder(orderData, createStatusInfo(isProductDegraded, isInventoryDegraded));
+        return orderService.createOrder(orderData, createStatusInfo(isInventoryDegraded));
     }
 
     private List<ItemData> createItemsData(List<OrderItemRequest> orderItems) {
@@ -101,8 +100,8 @@ public class OrderOrchestrationService {
     private ProductDto createFallbackProduct(Long productId) {
         return new ProductDto(
                 productId,
-                "",
-                "",
+                "name placeholder",
+                "description placeholder",
                 BigDecimal.ONE,
                 true
         );
@@ -208,8 +207,8 @@ public class OrderOrchestrationService {
         );
     }
 
-    private OrderStatusInfo createStatusInfo(AtomicBoolean isProductDegraded, AtomicBoolean isInventoryDegraded) {
-        if (isProductDegraded.get() || isInventoryDegraded.get()) {
+    private OrderStatusInfo createStatusInfo(AtomicBoolean isDegraded) {
+        if (isDegraded.get()) {
             return new OrderStatusInfo(OrderStatus.PENDING_CONFIRMATION, "order is awaiting confirmation");
         }
         return new OrderStatusInfo(OrderStatus.CONFIRMED, "successfully created order");
