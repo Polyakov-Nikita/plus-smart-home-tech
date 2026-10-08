@@ -102,3 +102,16 @@ spring:
           uri: lb://order-service
           predicates:
             - Path=${controllers.order.base-path}/**
+
+security:
+  users:
+    - username: ivan
+      password: ivan
+      roles:
+        - USER
+
+    - username: anna
+      password: anna
+      roles:
+        - USER
+        - ADMIN

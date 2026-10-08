@@ -37,3 +37,4 @@ controllers:
   order:
     base-path: /api/orders
     by-email: /by-email
+    by-id: /{id}
