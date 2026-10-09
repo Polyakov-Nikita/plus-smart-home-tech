@@ -1,40 +1,49 @@
-server:
-  port: 0
-
 spring:
   main:
     banner-mode: off
     log-startup-info: false
 
-logging:
-  level:
-    ru.yandex.practicum.telemetry: WARN
-    org:
-      springframework: ERROR
-      apache.kafka: WARN
+  cloud:
+    config:
+      enabled: false
 
-kafka:
-  bootstrap-servers: "localhost:9092"
+    discovery:
+      locator:
+        enabled: false
 
 eureka:
-  instance:
-    instance-id: ${spring.application.name}:${random.value}
   client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+    enabled: false
 
 controllers:
   categories:
     base-path: /api/categories
+
   products:
     base-path: /api/products
     search: /search
     category: /category/{categoryId}
+
   inventory:
     base-path: /api/inventory
     reserve: /reserve
     release: /release
+
   order:
     base-path: /api/orders
     by-email: /by-email
     by-id: /{id}
+
+app:
+  security:
+    users:
+      - username: ivan
+        password: ivan
+        roles:
+          - USER
+
+      - username: anna
+        password: anna
+        roles:
+          - USER
+          - ADMIN
