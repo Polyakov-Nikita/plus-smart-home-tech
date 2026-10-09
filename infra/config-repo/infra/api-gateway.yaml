@@ -103,15 +103,16 @@ spring:
           predicates:
             - Path=${controllers.order.base-path}/**
 
-security:
-  users:
-    - username: ivan
-      password: ivan
-      roles:
-        - USER
+app:
+  security:
+    users:
+      - username: ivan
+        password: ivan
+        roles:
+          - USER
 
-    - username: anna
-      password: anna
-      roles:
-        - USER
-        - ADMIN
+      - username: anna
+        password: anna
+        roles:
+          - USER
+          - ADMIN

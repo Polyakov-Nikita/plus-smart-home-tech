@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.List;
 
 @RequiredArgsConstructor
-@ConfigurationProperties(prefix = "security")
+@ConfigurationProperties(prefix = "app.security")
 @Getter
 public class UsersProperties {
     private final List<UserProperty> users;

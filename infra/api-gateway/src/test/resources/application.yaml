@@ -7,29 +7,6 @@ spring:
     config:
       enabled: false
 
-    gateway:
-      globalcors:
-        add-to-simple-url-handler-mapping: true
-        cors-configurations:
-          '[/**]':
-            allowed-origins:
-              - http://localhost:3000
-              - http://localhost:5173
-              - http://localhost:8443
-            allowed-methods:
-              - GET
-              - POST
-              - PUT
-              - PATCH
-              - DELETE
-              - OPTIONS
-            allowed-headers:
-              - '*'
-            exposed-headers:
-              - Location
-            allow-credentials: true
-            max-age: 3600
-
     discovery:
       locator:
         enabled: false
@@ -41,28 +18,32 @@ eureka:
 controllers:
   categories:
     base-path: /api/categories
+
   products:
     base-path: /api/products
     search: /search
     category: /category/{categoryId}
+
   inventory:
     base-path: /api/inventory
     reserve: /reserve
     release: /release
+
   order:
     base-path: /api/orders
     by-email: /by-email
     by-id: /{id}
 
-security:
-  users:
-    - username: ivan
-      password: ivan
-      roles:
-        - USER
+app:
+  security:
+    users:
+      - username: ivan
+        password: ivan
+        roles:
+          - USER
 
-    - username: anna
-      password: anna
-      roles:
-        - USER
-        - ADMIN
+      - username: anna
+        password: anna
+        roles:
+          - USER
+          - ADMIN
